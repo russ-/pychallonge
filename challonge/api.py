@@ -72,13 +72,22 @@ def fetch(method, uri, params_prefix=None, **params):
 
 def fetch_and_parse(method, uri, params_prefix=None, **params):
     """Fetch the given uri and return the root Element of the response."""
-    return ElementTree.parse(fetch(method, uri, params_prefix, **params)).getroot()
+    doc = ElementTree.parse(fetch(method, uri, params_prefix, **params))
+    return _parse(doc.getroot())
 
-def _dictify_element(element):
-    """Converts children of element into key/value pairs in a dict."""
+
+def _parse(root):
+    """Recursively convert an Element into python data types"""
+
+    if root.tag == "nil-classes":
+        return []
+    elif root.get("type") == "array":
+        return [_parse(child) for child in root]
+
     d = {}
-    for child in element:
+    for child in root:
         type = child.get("type") or "string"
+
         if child.get("nil"):
             value = None
         elif type == "boolean":
@@ -94,6 +103,7 @@ def _dictify_element(element):
 
         d[child.tag] = value
     return d
+
 
 def _prepare_params(dirty_params, prefix=None):
     """Prepares parameters to be sent to challonge.com.

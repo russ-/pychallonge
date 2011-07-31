@@ -3,38 +3,26 @@ from challonge import api
 
 def index(tournament):
     """Retrieve a tournament's participant list."""
-    doc = api.fetch_and_parse(
+    return api.fetch_and_parse(
         "GET",
         "tournaments/%s/participants" % tournament)
-
-    participants = []
-
-    for participant in doc:
-        participants.append(api._dictify_element(participant))
-
-    return participants
-
 
 def create(tournament, name, **params):
     """Add a participant to a tournament."""
     params.update({"name": name})
 
-    doc = api.fetch_and_parse(
+    return api.fetch_and_parse(
         "POST",
         "tournaments/%s/participants" % tournament,
         "participant",
         **params)
 
-    return api._dictify_element(doc)
-
 
 def show(tournament, participant_id):
     """Retrieve a single participant record for a tournament."""
-    doc = api.fetch_and_parse(
+    return api.fetch_and_parse(
         "GET",
         "tournaments/%s/participants/%s" % (tournament, participant_id))
-
-    return api._dictify_element(doc)
 
 
 def update(tournament, participant_id, **params):

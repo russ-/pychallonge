@@ -3,14 +3,7 @@ from challonge import api
 
 def index(**params):
     """Retrieve a set of tournaments created with your account."""
-    doc = api.fetch_and_parse("GET", "tournaments", **params)
-
-    tournaments = []
-
-    for tournament in doc:
-        tournaments.append(api._dictify_element(tournament))
-
-    return tournaments
+    return api.fetch_and_parse("GET", "tournaments", **params)
 
 
 def create(name, url, tournament_type="single elimination", **params):
@@ -21,15 +14,12 @@ def create(name, url, tournament_type="single elimination", **params):
         "tournament_type": tournament_type,
     })
 
-    doc = api.fetch_and_parse("POST", "tournaments", "tournament", **params)
-
-    return api._dictify_element(doc)
+    return api.fetch_and_parse("POST", "tournaments", "tournament", **params)
 
 
 def show(tournament):
     """Retrieve a single tournament record created with your account."""
-    doc = api.fetch_and_parse("GET", "tournaments/%s" % tournament)
-    return api._dictify_element(doc)
+    return api.fetch_and_parse("GET", "tournaments/%s" % tournament)
 
 
 def update(tournament, **params):
