@@ -31,7 +31,7 @@ class APITestCase(unittest.TestCase):
 
     def test_call(self):
         challonge.set_credentials(self.username, self.api_key)
-        challonge.fetch("GET", "tournaments")
+        self.assertNotEqual(challonge.fetch("GET", "tournaments"), '')
 
 
 class TournamentsTestCase(unittest.TestCase):

@@ -1,9 +1,9 @@
 from challonge import api
 
 
-def index():
+def index(**params):
     """Retrieve a set of tournaments created with your account."""
-    doc = api.fetch_and_parse("GET", "tournaments")
+    doc = api.fetch_and_parse("GET", "tournaments", **params)
     
     tournaments = []
 
