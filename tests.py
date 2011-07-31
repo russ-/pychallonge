@@ -1,4 +1,5 @@
 from __future__ import print_function
+import datetime
 import os
 import random
 import string
@@ -7,38 +8,33 @@ import challonge
 from challonge import api
 
 
+username = None
+api_key = None
+
+
 def _get_random_name():
     return "pychallonge_" + "".join(random.choice(string.ascii_lowercase) for x in xrange(0, 15))
 
 
 class APITestCase(unittest.TestCase):
-    def setUp(self):
-        self.username = os.environ.get("CHALLONGE_USER")
-        self.api_key = os.environ.get("CHALLONGE_KEY")
-        if not self.username or not self.api_key:
-            raise RuntimeError("You must add CHALLONGE_USER and CHALLONGE_KEY \
-            to your environment variables to run the test suite")
-
     def test_set_credentials(self):
-        challonge.set_credentials(self.username, self.api_key)
-        self.assertEqual(api._credentials["user"], self.username)
-        self.assertEqual(api._credentials["api_key"], self.api_key)
+        challonge.set_credentials(username, api_key)
+        self.assertEqual(api._credentials["user"], username)
+        self.assertEqual(api._credentials["api_key"], api_key)
 
     def test_get_credentials(self):
-        api._credentials["user"] = self.username
-        api._credentials["api_key"] = self.api_key
-        self.assertEqual(challonge.get_credentials(), (self.username, self.api_key))
+        api._credentials["user"] = username
+        api._credentials["api_key"] = api_key
+        self.assertEqual(challonge.get_credentials(), (username, api_key))
 
     def test_call(self):
-        challonge.set_credentials(self.username, self.api_key)
+        challonge.set_credentials(username, api_key)
         self.assertNotEqual(challonge.fetch("GET", "tournaments"), '')
 
 
 class TournamentsTestCase(unittest.TestCase):
     def setUp(self):
-        self.username = os.environ.get("CHALLONGE_USER")
-        self.api_key = os.environ.get("CHALLONGE_KEY")
-        challonge.set_credentials(self.username, self.api_key)
+        challonge.set_credentials(username, api_key)
         self.random_name = _get_random_name()
 
         self.t = challonge.tournaments.create(self.random_name, self.random_name)
@@ -127,9 +123,7 @@ class TournamentsTestCase(unittest.TestCase):
 
 class ParticipantsTestCase(unittest.TestCase):
     def setUp(self):
-        self.username = os.environ.get("CHALLONGE_USER")
-        self.api_key = os.environ.get("CHALLONGE_KEY")
-        challonge.set_credentials(self.username, self.api_key)
+        challonge.set_credentials(username, api_key)
         self.t_name = _get_random_name()
 
         self.t = challonge.tournaments.create(self.t_name, self.t_name)
@@ -174,9 +168,7 @@ class ParticipantsTestCase(unittest.TestCase):
 
 class MatchesTestCase(unittest.TestCase):
     def setUp(self):
-        self.username = os.environ.get("CHALLONGE_USER")
-        self.api_key = os.environ.get("CHALLONGE_KEY")
-        challonge.set_credentials(self.username, self.api_key)
+        challonge.set_credentials(username, api_key)
         self.t_name = _get_random_name()
 
         self.t = challonge.tournaments.create(self.t_name, self.t_name)
@@ -215,7 +207,14 @@ class MatchesTestCase(unittest.TestCase):
 
         m = challonge.matches.show(self.t["id"], m["id"])
         self.assertEqual(m["state"], "complete")
-        
+
+
 
 if __name__ == "__main__":
-        unittest.main()
+    username = os.environ.get("CHALLONGE_USER")
+    api_key = os.environ.get("CHALLONGE_KEY")
+    if not username or not api_key:
+        raise RuntimeError("You must add CHALLONGE_USER and CHALLONGE_KEY \
+            to your environment variables to run the test suite")
+
+    unittest.main()
