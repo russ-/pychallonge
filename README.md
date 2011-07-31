@@ -11,7 +11,7 @@ Pychallonge provides python bindings for the
 
 # Installation
 
-pip install -e git+http://github.com/russ-/pychallonge
+pip install -e git+http://github.com/russ-/pychallonge#egg=pychallonge
 
 
 # Usage
@@ -51,3 +51,7 @@ in your environment.
     Ran 16 tests in 67.103s
 
     OK
+
+Note that several tournaments are created, published, started, and completed
+over the course of the unit tests. These should be cleaned up by the end, but
+you may have a leftover tournament or two.

@@ -27,10 +27,12 @@ def set_credentials(username, api_key):
 
 
 def get_credentials():
+    """Retrieve the challonge.com credentials set with set_credentials()."""
     return _credentials["user"], _credentials["api_key"]
 
 
 def fetch(method, uri, **params):
+    """Fetch the given uri and return the contents of the response."""
     params = urllib.urlencode(params)
 
     # build the HTTP request
@@ -42,6 +44,7 @@ def fetch(method, uri, **params):
         req.add_data(params)
     req.get_method = lambda: method
 
+    # use basic authentication
     user, api_key = get_credentials()
     auth_handler = urllib2.HTTPBasicAuthHandler()
     auth_handler.add_password(
@@ -51,13 +54,14 @@ def fetch(method, uri, **params):
         passwd=api_key
     )
     opener = urllib2.build_opener(auth_handler)
+
     try:
         response = opener.open(req)
     except urllib2.HTTPError, e:
         if e.code != 422:
             raise
         # application-level errors
-        doc = parse(e)
+        doc = ElementTree.parse(e).getroot()
         if doc.tag != "errors":
             raise
         errors = [e.text for e in doc]
@@ -66,15 +70,12 @@ def fetch(method, uri, **params):
     return response
 
 
-def parse(fileobj):
-    return ElementTree.parse(fileobj).getroot()
-
-
 def fetch_and_parse(method, uri, **params):
-    return parse(fetch(method, uri, **params))
+    """Fetch the given uri and return the root Element of the response."""
+    return ElementTree.parse(fetch(method, uri, **params)).getroot()
 
 def _dictify_element(element):
-    """Converts children of element into key/value pairs in a dict"""
+    """Converts children of element into key/value pairs in a dict."""
     d = {}
     for child in element:
         type = child.get("type") or "string"
@@ -94,9 +95,10 @@ def _dictify_element(element):
         d[child.tag] = value
     return d
 
-def _verbosify_parameters(params_dict, object_type):
+def _verbosify_parameters(params_dict, prefix):
+    """Prepares parameters to be sent to challonge.com."""
     converted_params = {}
     for k, v in params_dict.iteritems():
-        converted_params["%s[%s]" % (object_type, k)] = v
+        converted_params["%s[%s]" % (prefix, k)] = v
 
     return converted_params
