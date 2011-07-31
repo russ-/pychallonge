@@ -4,6 +4,7 @@ import challonge
 
 setup(name = "pychallonge",
       author = "russ-",
+      author_email = "russminus@gmail.com",
       url = "https://github.com/russ-/pychallonge",
       download_url = "https://github.com/russ-/pychallonge/tarball/v1.0",
       version = challonge.__version__,
