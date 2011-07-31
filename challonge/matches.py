@@ -4,8 +4,7 @@ from challonge import api
 def index(tournament_id_or_url, **params):
     """Retrieve a tournament's match list."""
     doc = api.fetch_and_parse("GET",
-        "tournaments/%s/matches" % tournament_id_or_url,
-        **api._prepare_params(params))
+        "tournaments/%s/matches" % tournament_id_or_url, **params)
 
     matches = []
 
@@ -27,4 +26,4 @@ def update(tournament_id_or_url, match_id, **params):
     """Update/submit the score(s) for a match."""
     api.fetch_and_parse("PUT",
         "tournaments/%s/matches/%s" % (tournament_id_or_url, match_id),
-        **api._prepare_params(params, prefix="match"))
+        "match", **params)
