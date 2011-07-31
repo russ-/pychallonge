@@ -1,7 +1,7 @@
 # pychallonge
 
 Pychallonge provides python bindings for the
-[CHALLONGE!](http://challonge.com) [API](http://challonge.com/api).
+[CHALLONGE! API](http://challonge.com/api).
 
 
 # Requirements

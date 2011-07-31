@@ -3,13 +3,22 @@ import challonge
 
 
 setup(name = "pychallonge",
-      author = "Russ Amos",
-      url = "http://github.com/russ-/pychallonge",
+      author = "russ-",
+      url = "https://github.com/russ-/pychallonge",
+      download_url = "https://github.com/russ-/pychallonge/tarball/v1.0",
       version = challonge.__version__,
       packages = [
           'challonge',
       ],
       requires = [
-          'python-dateutil<2.0',
-      ]
+          'dateutil (<2.0)',
+      ],
+      classifiers = [
+          'Intended Audience :: Developers',
+          'License :: OSI Approved :: BSD License',
+          'Operating System :: OS Independent',
+          'Programming Language :: Python',
+          'Topic :: Software Development :: Libraries :: Python Modules',
+          'Topic :: Utilities',
+      ],
 )
