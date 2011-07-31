@@ -60,7 +60,7 @@ def fetch(method, uri, params_prefix=None, **params):
     except urllib2.HTTPError, e:
         if e.code != 422:
             raise
-        # application-level errors
+        # wrap up application-level errors
         doc = ElementTree.parse(e).getroot()
         if doc.tag != "errors":
             raise
@@ -78,7 +78,6 @@ def fetch_and_parse(method, uri, params_prefix=None, **params):
 
 def _parse(root):
     """Recursively convert an Element into python data types"""
-
     if root.tag == "nil-classes":
         return []
     elif root.get("type") == "array":
