@@ -11,44 +11,35 @@ Pychallonge provides python bindings for the
 
 # Installation
 
-pip install -e git+http://github.com/russ-/pychallonge#egg=pychallonge
+    pip install -e git+http://github.com/russ-/pychallonge#egg=pychallonge
 
 
 # Usage
 
-    >>> import challonge
+```python
+import challonge
 
-Tell pychallonge about your (CHALLONGE! API credentials)[http://challonge.com/api].
+# Tell pychallonge about your [CHALLONGE! API credentials](http://challonge.com/api).
+challonge.set_credentials("your_challonge_username", "your_api_key")
 
-    >>> challonge.set_credentials("your_challonge_username", "your_api_key")
+# Retrieve a tournament by its id (or its url).
+tournament = challonge.tournaments.show(3272)
 
-Retrieve a tournament by its id (or its url).
+# Tournaments, matches, and participants are all represented as normal Python dicts.
+print(tournament["id"]) # 3272
+print(tournament["name"]) # My Awesome Tournament
+print(ournament["started-at"]) # None
 
-    >>> tournament = challonge.tournaments.show(3272)
+# Retrieve the participants for a given tournament.
+participants = challonge.participants.index(tournament["id"])
+print(len(participants)) # 13
 
-Tournaments, matches, and participants are all represented as normal Python dicts.
-
-    >>> tournament["id"]
-    3272
-    >>> tournament["name"]
-    'My Awesome Tournament'
-    >>> tournament["started-at"]
-    >>>
-
-Retrieve the participants for a given tournament.
-
-    >>> participants = challonge.participants.index(tournament["id"])
-    >>> len(participants)
-    13
-
-Start the tournament and retrieve the updated information to see the effects
-of the change.
-
-    >>> challonge.tournaments.start(tournament["id"])
-    >>> tournament = challonge.tournaments.show(tournament["id"])
-    >>> tournament["started-at"]
-    datetime.datetime(2011, 7, 31, 15, 51, 57, tzinfo=tzoffset(None, -14400))
-
+# Start the tournament and retrieve the updated information to see the effects
+# of the change.
+challonge.tournaments.start(tournament["id"])
+tournament = challonge.tournaments.show(tournament["id"])
+print(tournament["started-at"]) # 2011-07-31 16:16:02-04:00
+```
 
 See [challonge.com](http://challonge.com/api) for full API documentation.
 
