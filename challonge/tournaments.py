@@ -26,45 +26,49 @@ def create(name, url, tournament_type="single elimination", **params):
     return api._dictify_element(doc)
 
 
-def show(tournament_id_or_url):
+def show(tournament):
     """Retrieve a single tournament record created with your account."""
-    doc = api.fetch_and_parse("GET", "tournaments/%s" % tournament_id_or_url)
+    doc = api.fetch_and_parse("GET", "tournaments/%s" % tournament)
     return api._dictify_element(doc)
 
 
-def update(tournament_id, **params):
+def update(tournament, **params):
     """Update a tournament's attributes."""
-    api.fetch("PUT", "tournaments/%s" % tournament_id, "tournament", **params)
+    api.fetch("PUT", "tournaments/%s" % tournament, "tournament", **params)
 
 
-def destroy(tournament_id_or_url):
+def destroy(tournament):
     """Deletes a tournament along with all its associated records.
 
     There is no undo, so use with care!
+
     """
-    api.fetch("DELETE", "tournaments/%s" % tournament_id_or_url)
+    api.fetch("DELETE", "tournaments/%s" % tournament)
 
 
-def publish(tournament_id_or_url):
+def publish(tournament):
     """Publish a tournament, making it publically accessible.
 
      The tournament must have at least 2 participants.
+
      """
-    api.fetch("POST", "tournaments/publish/%s" % tournament_id_or_url)
+    api.fetch("POST", "tournaments/publish/%s" % tournament)
 
 
-def start(tournament_id_or_url):
+def start(tournament):
     """Start a tournament, opening up matches for score reporting.
 
     The tournament must have at least 2 participants.
+
     """
-    api.fetch("POST", "tournaments/start/%s" % tournament_id_or_url)
+    api.fetch("POST", "tournaments/start/%s" % tournament)
 
 
-def reset(tournament_id_or_url):
+def reset(tournament):
     """Reset a tournament, clearing all of its scores and attachments.
 
     You can then add/remove/edit participants before starting the
     tournament again.
+
     """
-    api.fetch("POST", "tournaments/reset/%s" % tournament_id_or_url)
+    api.fetch("POST", "tournaments/reset/%s" % tournament)

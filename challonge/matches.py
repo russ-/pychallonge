@@ -1,10 +1,12 @@
 from challonge import api
 
 
-def index(tournament_id_or_url, **params):
+def index(tournament, **params):
     """Retrieve a tournament's match list."""
-    doc = api.fetch_and_parse("GET",
-        "tournaments/%s/matches" % tournament_id_or_url, **params)
+    doc = api.fetch_and_parse(
+        "GET",
+        "tournaments/%s/matches" % tournament,
+        **params)
 
     matches = []
 
@@ -14,16 +16,19 @@ def index(tournament_id_or_url, **params):
     return matches
 
 
-def show(tournament_id_or_url, match_id):
+def show(tournament, match_id):
     """Retrieve a single match record for a tournament."""
-    doc = api.fetch_and_parse("GET",
-        "tournaments/%s/matches/%s" % (tournament_id_or_url, match_id))
+    doc = api.fetch_and_parse(
+        "GET",
+        "tournaments/%s/matches/%s" % (tournament, match_id))
 
     return api._dictify_element(doc)
 
 
-def update(tournament_id_or_url, match_id, **params):
+def update(tournament, match_id, **params):
     """Update/submit the score(s) for a match."""
-    api.fetch_and_parse("PUT",
-        "tournaments/%s/matches/%s" % (tournament_id_or_url, match_id),
-        "match", **params)
+    api.fetch_and_parse(
+        "PUT",
+        "tournaments/%s/matches/%s" % (tournament, match_id),
+        "match",
+        **params)
