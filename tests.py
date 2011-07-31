@@ -35,12 +35,12 @@ class APITestCase(unittest.TestCase):
 
     def test_set_credentials(self):
         challonge.set_credentials(self.username, self.api_key)
-        self.assertEqual(api._auth_info.user, self.username)
-        self.assertEqual(api._auth_info.api_key, self.api_key)
+        self.assertEqual(api._credentials["user"], self.username)
+        self.assertEqual(api._credentials["api_key"], self.api_key)
 
     def test_get_credentials(self):
-        api._auth_info.user = self.username
-        api._auth_info.api_key = self.api_key
+        api._credentials["user"] = self.username
+        api._credentials["api_key"] = self.api_key
         self.assertEqual(challonge.get_credentials(), (self.username, self.api_key))
 
     def test_call(self):

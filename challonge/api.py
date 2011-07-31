@@ -1,4 +1,3 @@
-import threading
 import urllib
 import urllib2
 
@@ -10,10 +9,10 @@ except ImportError:
 
 CHALLONGE_API_URL = "challonge.com/api"
 
-_auth_info = threading.local()
-_auth_info.user = ""
-_auth_info.api_key = ""
-
+_credentials = {
+    "user": None,
+    "api_key": None,
+}
 
 
 class ChallongeException(Exception):
@@ -22,12 +21,12 @@ class ChallongeException(Exception):
 
 def set_credentials(username, api_key):
     """Set the challonge.com api credentials to use."""
-    _auth_info.user = username
-    _auth_info.api_key = api_key
+    _credentials["user"] = username
+    _credentials["api_key"] = api_key
 
 
 def get_credentials():
-    return (_auth_info.user, _auth_info.api_key)
+    return _credentials["user"], _credentials["api_key"]
 
 
 def fetch(method, uri, **params):
