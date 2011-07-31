@@ -8,7 +8,7 @@ from challonge import api
 
 
 def _get_random_name():
-    return ''.join(random.choice(string.ascii_lowercase) for x in xrange(0, 20))
+    return "pychallonge_" + "".join(random.choice(string.ascii_lowercase) for x in xrange(0, 15))
 
 def _remove_dates(d):
     """Removes created-at and updated-at attributes, for easier testing.
@@ -32,6 +32,7 @@ class APITestCase(unittest.TestCase):
         if not self.username or not self.api_key:
             raise RuntimeError("You must add CHALLONGE_USER and CHALLONGE_KEY \
             to your environment variables to run the test suite")
+
     def test_set_credentials(self):
         challonge.set_credentials(self.username, self.api_key)
         self.assertEqual(api._auth_info.user, self.username)
