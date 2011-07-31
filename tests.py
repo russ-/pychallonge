@@ -13,7 +13,7 @@ api_key = None
 
 
 def _get_random_name():
-    return "pychallonge_" + "".join(random.choice(string.ascii_lowercase) for x in xrange(0, 15))
+    return "pychallonge_" + "".join(random.choice(string.ascii_lowercase) for _ in xrange(0, 15))
 
 
 class APITestCase(unittest.TestCase):
@@ -48,11 +48,27 @@ class TournamentsTestCase(unittest.TestCase):
         self.assertEqual(len(ts), 1)
         self.assertEqual(self.t, ts[0])
 
+    def test_index_filter_by_state(self):
+        ts = challonge.tournaments.index(state="pending")
+        ts = filter(lambda x: x["id"] == self.t["id"], ts)
+        self.assertEqual(len(ts), 1)
+        self.assertEqual(self.t, ts[0])
+
+        ts = challonge.tournaments.index(state="in_progress")
+        ts = filter(lambda x: x["id"] == self.t["id"], ts)
+        self.assertEqual(ts, [])
+
+    def test_index_filter_by_created(self):
+        ts = challonge.tournaments.index(
+            created_after=datetime.datetime.now().date() - datetime.timedelta(days=1))
+        ts = filter(lambda x: x["id"] == self.t["id"], ts)
+        self.assertTrue(self.t["id"] in map(lambda x: x["id"], ts))
+
     def test_show(self):
         self.assertEqual(challonge.tournaments.show(self.t["id"]),
                          self.t)
 
-    def test_update(self):
+    def test_update_name(self):
         challonge.tournaments.update(self.t["id"], name="Test!")
 
         t = challonge.tournaments.show(self.t["id"])
@@ -67,29 +83,43 @@ class TournamentsTestCase(unittest.TestCase):
 
         self.assertEqual(t, self.t)
 
+    def test_update_private(self):
+        challonge.tournaments.update(self.t["id"], private=True)
+
+        t = challonge.tournaments.show(self.t["id"])
+
+        self.assertEqual(t["private"], True)
+
+    def test_update_type(self):
+        challonge.tournaments.update(self.t["id"], tournament_type="round robin")
+
+        t = challonge.tournaments.show(self.t["id"])
+
+        self.assertEqual(t["tournament-type"], "round robin")
+
     def test_publish(self):
         self.assertRaises(challonge.ChallongeException,
             challonge.tournaments.publish, self.t["id"])
 
         self.assertEqual(self.t["published-at"], None)
-        ps = [
-            challonge.participants.create(self.t["id"], "#1"),
-            challonge.participants.create(self.t["id"], "#2")
-        ]
+
+        challonge.participants.create(self.t["id"], "#1")
+        challonge.participants.create(self.t["id"], "#2")
+
         challonge.tournaments.publish(self.t["id"])
         t = challonge.tournaments.show(self.t["id"])
+
         self.assertNotEqual(t["published-at"], None)
 
     def test_start(self):
-        # we have to have participants
+        # we have to add participants in order to publish() and start()
         self.assertRaises(challonge.ChallongeException,
             challonge.tournaments.start, self.t["id"])
 
         self.assertEqual(self.t["started-at"], None)
-        ps = [
-            challonge.participants.create(self.t["id"], "#1"),
-            challonge.participants.create(self.t["id"], "#2")
-        ]
+
+        challonge.participants.create(self.t["id"], "#1")
+        challonge.participants.create(self.t["id"], "#2")
 
         # we have to publish, first
         self.assertRaises(challonge.ChallongeException,
@@ -103,19 +133,20 @@ class TournamentsTestCase(unittest.TestCase):
         self.assertNotEqual(t["started-at"], None)
 
     def test_reset(self):
-        ps = [
-            challonge.participants.create(self.t["id"], "#1"),
-            challonge.participants.create(self.t["id"], "#2")
-        ]
+        # have to add participants in order to publish() and start()
+        challonge.participants.create(self.t["id"], "#1")
+        challonge.participants.create(self.t["id"], "#2")
+
         challonge.tournaments.publish(self.t["id"])
         challonge.tournaments.start(self.t["id"])
 
+        # we can't add participants to a started tournament...
         self.assertRaises(challonge.ChallongeException,
             challonge.participants.create, self.t["id"], "name")
 
         challonge.tournaments.reset(self.t["id"])
 
-        # assertNotRaises
+        # but we can add participants to a reset tournament
         p = challonge.participants.create(self.t["id"], "name")
 
         challonge.participants.destroy(self.t["id"], p["id"])
