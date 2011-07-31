@@ -74,12 +74,12 @@ class TournamentsTestCase(unittest.TestCase):
         t = challonge.tournaments.show(self.t["id"])
 
         self.assertEqual(t["name"], "Test!")
-        del t["name"]
-        del self.t["name"]
+        t.pop("name")
+        self.t.pop("name")
 
         self.assertTrue(t["updated-at"] >= self.t["updated-at"])
-        del t["updated-at"]
-        del self.t["updated-at"]
+        t.pop("updated-at")
+        self.t.pop("updated-at")
 
         self.assertEqual(t, self.t)
 
@@ -182,12 +182,12 @@ class ParticipantsTestCase(unittest.TestCase):
         p1 = challonge.participants.show(self.t["id"], self.p1["id"])
 
         self.assertEqual(p1["misc"], "Test!")
-        del self.p1["misc"]
-        del p1["misc"]
+        self.p1.pop("misc")
+        p1.pop("misc")
 
         self.assertTrue(p1["updated-at"] >= self.p1["updated-at"])
-        del self.p1["updated-at"]
-        del p1["updated-at"]
+        self.p1.pop("updated-at")
+        p1.pop("updated-at")
 
         self.assertEqual(self.p1, p1)
 
