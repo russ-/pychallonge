@@ -5,7 +5,7 @@ def index(tournament_id_or_url, **params):
     """Retrieve a tournament's match list."""
     doc = api.fetch_and_parse("GET",
         "tournaments/%s/matches" % tournament_id_or_url,
-        **params)
+        **api._prepare_params(params))
 
     matches = []
 
@@ -27,4 +27,4 @@ def update(tournament_id_or_url, match_id, **params):
     """Update/submit the score(s) for a match."""
     api.fetch_and_parse("PUT",
         "tournaments/%s/matches/%s" % (tournament_id_or_url, match_id),
-        **api._verbosify_parameters(params, "match"))
+        **api._prepare_params(params, prefix="match"))

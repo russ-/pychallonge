@@ -20,7 +20,7 @@ def create(tournament_id_or_url, name, **params):
 
     doc = api.fetch_and_parse("POST",
         "tournaments/%s/participants" % tournament_id_or_url,
-        **api._verbosify_parameters(params, "participant"))
+        **api._prepare_params(params, prefix="participant"))
 
     return api._dictify_element(doc)
 
@@ -37,7 +37,7 @@ def update(tournament_id_or_url, participant_id, **params):
     """Update the attributes of a tournament participant."""
     api.fetch("PUT",
         "tournaments/%s/participants/%s" % (tournament_id_or_url, participant_id),
-        **api._verbosify_parameters(params, "participant"))
+        **api._prepare_params(params, prefix="participant"))
 
 
 def destroy(tournament_id_or_url, participant_id):

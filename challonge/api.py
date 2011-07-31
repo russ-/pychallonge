@@ -91,14 +91,23 @@ def _dictify_element(element):
             value = int(child.text)
         else:
             value = child.text
-        
+
         d[child.tag] = value
     return d
 
-def _verbosify_parameters(params_dict, prefix):
+def _prepare_params(dirty_params, prefix=None):
     """Prepares parameters to be sent to challonge.com."""
-    converted_params = {}
-    for k, v in params_dict.iteritems():
-        converted_params["%s[%s]" % (prefix, k)] = v
+    params = {}
+    for k, v in dirty_params.iteritems():
+        if hasattr(v, "isoformat"):
+            v = v.isoformat()
+        elif isinstance(v, bool):
+            # challonge.com only accepts lowercase true/false
+            v = str(v).lower()
+            
+        if prefix:
+            params["%s[%s]" % (prefix, k)] = v
+        else:
+            params[k] = v
 
-    return converted_params
+    return params
