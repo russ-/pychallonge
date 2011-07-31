@@ -7,6 +7,9 @@ setup(name = "pychallonge",
       url = "http://github.com/russ-/pychallonge",
       version = challonge.__version__,
       packages = [
-        'challonge',
+          'challonge',
       ],
+      requires = [
+          'python-dateutil<2.0',
+      ]
 )

@@ -10,20 +10,6 @@ from challonge import api
 def _get_random_name():
     return "pychallonge_" + "".join(random.choice(string.ascii_lowercase) for x in xrange(0, 15))
 
-def _remove_dates(d):
-    """Removes created-at and updated-at attributes, for easier testing.
-
-    This is caused by different timezones being used for dates, not because
-    the dates are necessarily different.
-
-    TODO Could be dealt with more correctly by converting params to correct datatypes
-    in api._dictify_element().
-    """
-    if "created-at" in d:
-        del d["created-at"]
-    if "updated-at" in d:
-        del d["updated-at"]
-
 
 class APITestCase(unittest.TestCase):
     def setUp(self):
@@ -64,20 +50,26 @@ class TournamentsTestCase(unittest.TestCase):
         ts = challonge.tournaments.index()
         ts = filter(lambda x: x["id"] == self.t["id"], ts)
         self.assertEqual(len(ts), 1)
-        self.assertEqual(_remove_dates(self.t), _remove_dates(ts[0]))
+        self.assertEqual(self.t, ts[0])
 
     def test_show(self):
-        self.assertEqual(_remove_dates(challonge.tournaments.show(self.t["id"])),
-                         _remove_dates(self.t))
+        self.assertEqual(challonge.tournaments.show(self.t["id"]),
+                         self.t)
 
     def test_update(self):
         challonge.tournaments.update(self.t["id"], name="Test!")
 
         t = challonge.tournaments.show(self.t["id"])
+
         self.assertEqual(t["name"], "Test!")
         del t["name"]
         del self.t["name"]
-        self.assertEqual(_remove_dates(t), _remove_dates(self.t))
+
+        self.assertTrue(t["updated-at"] >= self.t["updated-at"])
+        del t["updated-at"]
+        del self.t["updated-at"]
+
+        self.assertEqual(t, self.t)
 
     def test_publish(self):
         self.assertRaises(challonge.ChallongeException,
@@ -152,22 +144,27 @@ class ParticipantsTestCase(unittest.TestCase):
     def test_index(self):
         ps = challonge.participants.index(self.t["id"])
         self.assertEqual(len(ps), 2)
-        ps = [_remove_dates(p) for p in ps]
-        self.assertTrue(_remove_dates(self.p1) == ps[0] or _remove_dates(self.p1) == ps[1])
-        self.assertTrue(_remove_dates(self.p2) == ps[0] or _remove_dates(self.p2) == ps[1])
+
+        self.assertTrue(self.p1 == ps[0] or self.p1 == ps[1])
+        self.assertTrue(self.p2 == ps[0] or self.p2 == ps[1])
 
     def test_show(self):
         p1 = challonge.participants.show(self.t["id"], self.p1["id"])
-        self.assertEqual(_remove_dates(p1), _remove_dates(self.p1))
+        self.assertEqual(p1, self.p1)
 
     def test_update(self):
         challonge.participants.update(self.t["id"], self.p1["id"], misc="Test!")
         p1 = challonge.participants.show(self.t["id"], self.p1["id"])
+
         self.assertEqual(p1["misc"], "Test!")
-        
         del self.p1["misc"]
         del p1["misc"]
-        self.assertEqual(_remove_dates(self.p1), _remove_dates(p1))
+
+        self.assertTrue(p1["updated-at"] >= self.p1["updated-at"])
+        del self.p1["updated-at"]
+        del p1["updated-at"]
+
+        self.assertEqual(self.p1, p1)
 
     def test_randomize(self):
         # randomize has a 50% chance of actually being different than
@@ -206,8 +203,7 @@ class MatchesTestCase(unittest.TestCase):
     def test_show(self):
         ms = challonge.matches.index(self.t["id"])
         for m in ms:
-            self.assertEqual(_remove_dates(m),
-                _remove_dates(challonge.matches.show(self.t["id"], m["id"])))
+            self.assertEqual(m, challonge.matches.show(self.t["id"], m["id"]))
 
     def test_update(self):
         ms = challonge.matches.index(self.t["id"])

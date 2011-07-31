@@ -1,6 +1,7 @@
+import decimal
 import urllib
 import urllib2
-
+import dateutil.parser
 try:
     from xml.etree import cElementTree as ElementTree
 except ImportError:
@@ -74,7 +75,24 @@ def fetch_and_parse(method, uri, **params):
 
 def _dictify_element(element):
     """Converts children of element into key/value pairs in a dict"""
-    return dict((e.tag, e.text) for e in element)
+    d = {}
+    for child in element:
+        type = child.get("type") or "string"
+        if child.get("nil"):
+            value = None
+        elif type == "boolean":
+            value = True if child.text.lower() == "true" else False
+        elif type == "datetime":
+            value = dateutil.parser.parse(child.text)
+        elif type == "decimal":
+            value = decimal.Decimal(child.text)
+        elif type == "integer":
+            value = int(child.text)
+        else:
+            value = child.text
+        
+        d[child.tag] = value
+    return d
 
 def _verbosify_parameters(params_dict, object_type):
     converted_params = {}
