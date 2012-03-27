@@ -1,7 +1,6 @@
 import decimal
 import urllib
 import urllib2
-import dateutil.parser
 try:
     from xml.etree import cElementTree as ElementTree
 except ImportError:
@@ -78,6 +77,7 @@ def fetch_and_parse(method, uri, params_prefix=None, **params):
 
 def _parse(root):
     """Recursively convert an Element into python data types"""
+    import dateutil.parser
     if root.tag == "nil-classes":
         return []
     elif root.get("type") == "array":
