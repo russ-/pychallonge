@@ -9,7 +9,7 @@ setup(name = "pychallonge",
       packages = [
           'challonge',
       ],
-      requires = [
-          'python_dateutil (<2.0)',
+      install_requires = [
+          'python-dateutil<2.0',
       ]
 )
