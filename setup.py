@@ -10,6 +10,6 @@ setup(name = "pychallonge",
           'challonge',
       ],
       requires = [
-          'python-dateutil<2.0',
+          'python_dateutil (<2.0)',
       ]
 )
