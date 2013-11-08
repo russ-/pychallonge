@@ -1,7 +1,7 @@
 # pychallonge
 
 Pychallonge provides python bindings for the
-[CHALLONGE!](http://challonge.com) [API](http://challonge.com/api).
+[CHALLONGE!](http://challonge.com) [API](http://api.challonge.com/v1).
 
 
 # Requirements
@@ -19,7 +19,7 @@ Pychallonge provides python bindings for the
 ```python
 import challonge
 
-# Tell pychallonge about your [CHALLONGE! API credentials](http://challonge.com/api).
+# Tell pychallonge about your [CHALLONGE! API credentials](http://api.challonge.com/v1).
 challonge.set_credentials("your_challonge_username", "your_api_key")
 
 # Retrieve a tournament by its id (or its url).
@@ -41,7 +41,7 @@ tournament = challonge.tournaments.show(tournament["id"])
 print(tournament["started-at"]) # 2011-07-31 16:16:02-04:00
 ```
 
-See [challonge.com](http://challonge.com/api) for full API documentation.
+See [challonge.com](http://api.challonge.com/v1) for full API documentation.
 
 
 # Running the unit tests
