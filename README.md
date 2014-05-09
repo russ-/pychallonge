@@ -28,7 +28,7 @@ tournament = challonge.tournaments.show(3272)
 # Tournaments, matches, and participants are all represented as normal Python dicts.
 print(tournament["id"]) # 3272
 print(tournament["name"]) # My Awesome Tournament
-print(ournament["started-at"]) # None
+print(tournament["started-at"]) # None
 
 # Retrieve the participants for a given tournament.
 participants = challonge.participants.index(tournament["id"])
