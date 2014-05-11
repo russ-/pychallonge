@@ -7,7 +7,7 @@ except ImportError:
     from xml.etree import ElementTree
 
 
-CHALLONGE_API_URL = "challonge.com/api"
+CHALLONGE_API_URL = "api.challonge.com/v1"
 
 _credentials = {
     "user": None,
