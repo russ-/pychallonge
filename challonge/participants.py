@@ -7,6 +7,7 @@ def index(tournament):
         "GET",
         "tournaments/%s/participants" % tournament)
 
+
 def create(tournament, name, **params):
     """Add a participant to a tournament."""
     params.update({"name": name})

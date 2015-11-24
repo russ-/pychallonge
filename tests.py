@@ -17,6 +17,7 @@ def _get_random_name():
 
 
 class APITestCase(unittest.TestCase):
+
     def test_set_credentials(self):
         challonge.set_credentials(username, api_key)
         self.assertEqual(api._credentials["user"], username)
@@ -33,6 +34,7 @@ class APITestCase(unittest.TestCase):
 
 
 class TournamentsTestCase(unittest.TestCase):
+
     def setUp(self):
         challonge.set_credentials(username, api_key)
         self.random_name = _get_random_name()
@@ -98,8 +100,10 @@ class TournamentsTestCase(unittest.TestCase):
         self.assertEqual(t["tournament-type"], "round robin")
 
     def test_publish(self):
-        self.assertRaises(challonge.ChallongeException,
-            challonge.tournaments.publish, self.t["id"])
+        self.assertRaises(
+            challonge.ChallongeException,
+            challonge.tournaments.publish,
+            self.t["id"])
 
         self.assertEqual(self.t["published-at"], None)
 
@@ -113,8 +117,10 @@ class TournamentsTestCase(unittest.TestCase):
 
     def test_start(self):
         # we have to add participants in order to publish() and start()
-        self.assertRaises(challonge.ChallongeException,
-            challonge.tournaments.start, self.t["id"])
+        self.assertRaises(
+            challonge.ChallongeException,
+            challonge.tournaments.start,
+            self.t["id"])
 
         self.assertEqual(self.t["started-at"], None)
 
@@ -122,8 +128,10 @@ class TournamentsTestCase(unittest.TestCase):
         challonge.participants.create(self.t["id"], "#2")
 
         # we have to publish, first
-        self.assertRaises(challonge.ChallongeException,
-            challonge.tournaments.start, self.t["id"])
+        self.assertRaises(
+            challonge.ChallongeException,
+            challonge.tournaments.start,
+            self.t["id"])
 
         challonge.tournaments.publish(self.t["id"])
         challonge.tournaments.start(self.t["id"])
@@ -141,8 +149,11 @@ class TournamentsTestCase(unittest.TestCase):
         challonge.tournaments.start(self.t["id"])
 
         # we can't add participants to a started tournament...
-        self.assertRaises(challonge.ChallongeException,
-            challonge.participants.create, self.t["id"], "name")
+        self.assertRaises(
+            challonge.ChallongeException,
+            challonge.participants.create,
+            self.t["id"],
+            "name")
 
         challonge.tournaments.reset(self.t["id"])
 
@@ -153,6 +164,7 @@ class TournamentsTestCase(unittest.TestCase):
 
 
 class ParticipantsTestCase(unittest.TestCase):
+
     def setUp(self):
         challonge.set_credentials(username, api_key)
         self.t_name = _get_random_name()
@@ -198,6 +210,7 @@ class ParticipantsTestCase(unittest.TestCase):
 
 
 class MatchesTestCase(unittest.TestCase):
+
     def setUp(self):
         challonge.set_credentials(username, api_key)
         self.t_name = _get_random_name()
@@ -233,12 +246,14 @@ class MatchesTestCase(unittest.TestCase):
         m = ms[0]
         self.assertEqual(m["state"], "open")
 
-        challonge.matches.update(self.t["id"], m["id"],
-            scores_csv="3-2,4-1,2-2", winner_id=m["player1-id"])
+        challonge.matches.update(
+            self.t["id"],
+            m["id"],
+            scores_csv="3-2,4-1,2-2",
+            winner_id=m["player1-id"])
 
         m = challonge.matches.show(self.t["id"], m["id"])
         self.assertEqual(m["state"], "complete")
-
 
 
 if __name__ == "__main__":
