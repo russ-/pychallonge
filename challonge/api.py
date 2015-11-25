@@ -44,11 +44,7 @@ def fetch(method, uri, params_prefix=None, **params):
 
     # build the HTTP request
     url = "https://%s/%s.xml" % (CHALLONGE_API_URL, uri)
-    if method == "GET":
-        req = Request(url, binary_params)
-    else:
-        req = Request(url)
-        req.add_data(binary_params)
+    req = Request(url, binary_params)
     req.get_method = lambda: method
 
     # use basic authentication
@@ -99,7 +95,7 @@ def _parse(root):
             value = None
         elif type == "boolean":
             value = True if child.text.lower() == "true" else False
-        elif type == "datetime":
+        elif type == "dateTime":
             value = dateutil.parser.parse(child.text)
         elif type == "decimal":
             value = decimal.Decimal(child.text)
@@ -147,6 +143,5 @@ def _prepare_params(dirty_params, prefix=None):
                 params["%s[%s]" % (prefix, k)] = v
             else:
                 params[k] = v
-
 
     return params

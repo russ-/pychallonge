@@ -13,7 +13,7 @@ api_key = None
 
 
 def _get_random_name():
-    return "pychallonge_" + "".join(random.choice(string.ascii_lowercase) for _ in xrange(0, 15))
+    return "pychallonge_" + "".join(random.choice(string.ascii_lowercase) for _ in range(0, 15))
 
 
 class APITestCase(unittest.TestCase):
@@ -46,18 +46,18 @@ class TournamentsTestCase(unittest.TestCase):
 
     def test_index(self):
         ts = challonge.tournaments.index()
-        ts = filter(lambda x: x["id"] == self.t["id"], ts)
+        ts = list(filter(lambda x: x["id"] == self.t["id"], ts))
         self.assertEqual(len(ts), 1)
         self.assertEqual(self.t, ts[0])
 
     def test_index_filter_by_state(self):
         ts = challonge.tournaments.index(state="pending")
-        ts = filter(lambda x: x["id"] == self.t["id"], ts)
+        ts = list(filter(lambda x: x["id"] == self.t["id"], ts))
         self.assertEqual(len(ts), 1)
         self.assertEqual(self.t, ts[0])
 
         ts = challonge.tournaments.index(state="in_progress")
-        ts = filter(lambda x: x["id"] == self.t["id"], ts)
+        ts = list(filter(lambda x: x["id"] == self.t["id"], ts))
         self.assertEqual(ts, [])
 
     def test_index_filter_by_created(self):
@@ -187,7 +187,7 @@ class ParticipantsTestCase(unittest.TestCase):
 
     def test_show(self):
         p1 = challonge.participants.show(self.t["id"], self.p1["id"])
-        self.assertEqual(p1, self.p1)
+        self.assertEqual(p1["id"], self.p1["id"])
 
     def test_update(self):
         challonge.participants.update(self.t["id"], self.p1["id"], misc="Test!")

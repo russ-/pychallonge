@@ -6,7 +6,7 @@ Pychallonge provides python bindings for the
 
 # Requirements
 
-- python-dateutil==1.5
+- python-dateutil==2.4.2
 
 
 # Installation
