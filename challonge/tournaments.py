@@ -36,15 +36,6 @@ def destroy(tournament):
     api.fetch("DELETE", "tournaments/%s" % tournament)
 
 
-def publish(tournament):
-    """Publish a tournament, making it publically accessible.
-
-     The tournament must have at least 2 participants.
-
-     """
-    api.fetch("POST", "tournaments/publish/%s" % tournament)
-
-
 def start(tournament):
     """Start a tournament, opening up matches for score reporting.
 

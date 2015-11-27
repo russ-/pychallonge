@@ -99,24 +99,8 @@ class TournamentsTestCase(unittest.TestCase):
 
         self.assertEqual(t["tournament-type"], "round robin")
 
-    def test_publish(self):
-        self.assertRaises(
-            challonge.ChallongeException,
-            challonge.tournaments.publish,
-            self.t["id"])
-
-        self.assertEqual(self.t["published-at"], None)
-
-        challonge.participants.create(self.t["id"], "#1")
-        challonge.participants.create(self.t["id"], "#2")
-
-        challonge.tournaments.publish(self.t["id"])
-        t = challonge.tournaments.show(self.t["id"])
-
-        self.assertNotEqual(t["published-at"], None)
-
     def test_start(self):
-        # we have to add participants in order to publish() and start()
+        # we have to add participants in order to start()
         self.assertRaises(
             challonge.ChallongeException,
             challonge.tournaments.start,
@@ -127,25 +111,16 @@ class TournamentsTestCase(unittest.TestCase):
         challonge.participants.create(self.t["id"], "#1")
         challonge.participants.create(self.t["id"], "#2")
 
-        # we have to publish, first
-        self.assertRaises(
-            challonge.ChallongeException,
-            challonge.tournaments.start,
-            self.t["id"])
-
-        challonge.tournaments.publish(self.t["id"])
         challonge.tournaments.start(self.t["id"])
 
         t = challonge.tournaments.show(self.t["id"])
-        self.assertNotEqual(t["published-at"], None)
         self.assertNotEqual(t["started-at"], None)
 
     def test_reset(self):
-        # have to add participants in order to publish() and start()
+        # have to add participants in order to start()
         challonge.participants.create(self.t["id"], "#1")
         challonge.participants.create(self.t["id"], "#2")
 
-        challonge.tournaments.publish(self.t["id"])
         challonge.tournaments.start(self.t["id"])
 
         # we can't add participants to a started tournament...
@@ -220,7 +195,6 @@ class MatchesTestCase(unittest.TestCase):
         self.p1 = challonge.participants.create(self.t["id"], self.p1_name)
         self.p2_name = _get_random_name()
         self.p2 = challonge.participants.create(self.t["id"], self.p2_name)
-        challonge.tournaments.publish(self.t["id"])
         challonge.tournaments.start(self.t["id"])
 
     def tearDown(self):
