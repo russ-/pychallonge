@@ -10,6 +10,6 @@ setup(name = "pychallonge",
           'challonge',
       ],
       install_requires = [
-          'python-dateutil==2.4.2',
+          'iso8601==0.1.11',
       ]
 )

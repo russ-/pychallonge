@@ -1,4 +1,5 @@
 import decimal
+import iso8601
 try:
     # For Python 3.0 and later
     from urllib.parse import urlencode
@@ -81,7 +82,6 @@ def fetch_and_parse(method, uri, params_prefix=None, **params):
 
 def _parse(root):
     """Recursively convert an Element into python data types"""
-    import dateutil.parser
     if root.tag == "nil-classes":
         return []
     elif root.get("type") == "array":
@@ -96,7 +96,7 @@ def _parse(root):
         elif type == "boolean":
             value = True if child.text.lower() == "true" else False
         elif type == "dateTime":
-            value = dateutil.parser.parse(child.text)
+            value = iso8601.parse_date(child.text)
         elif type == "decimal":
             value = decimal.Decimal(child.text)
         elif type == "integer":
@@ -119,29 +119,16 @@ def _prepare_params(dirty_params, prefix=None):
 
     """
     params = {}
-    try:
-        for k, v in dirty_params.iteritems():
-            if hasattr(v, "isoformat"):
-                v = v.isoformat()
-            elif isinstance(v, bool):
-                # challonge.com only accepts lowercase true/false
-                v = str(v).lower()
+    for k, v in dirty_params.items():
+        if hasattr(v, "isoformat"):
+            v = v.isoformat()
+        elif isinstance(v, bool):
+            # challonge.com only accepts lowercase true/false
+            v = str(v).lower()
 
-            if prefix:
-                params["%s[%s]" % (prefix, k)] = v
-            else:
-                params[k] = v
-    except AttributeError:
-        for k, v in dirty_params.items():
-            if hasattr(v, "isoformat"):
-                v = v.isoformat()
-            elif isinstance(v, bool):
-                # challonge.com only accepts lowercase true/false
-                v = str(v).lower()
-
-            if prefix:
-                params["%s[%s]" % (prefix, k)] = v
-            else:
-                params[k] = v
+        if prefix:
+            params["%s[%s]" % (prefix, k)] = v
+        else:
+            params[k] = v
 
     return params
