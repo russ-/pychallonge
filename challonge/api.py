@@ -1,6 +1,14 @@
 import decimal
-import urllib
-import urllib2
+import iso8601
+try:
+    # For Python 3.0 and later
+    from urllib.parse import urlencode
+    from urllib.request import Request, HTTPBasicAuthHandler, build_opener
+    from urllib.error import HTTPError
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib import urlencode
+    from urllib2 import Request, HTTPBasicAuthHandler, build_opener, HTTPError
 try:
     from xml.etree import cElementTree as ElementTree
 except ImportError:
@@ -32,31 +40,28 @@ def get_credentials():
 
 def fetch(method, uri, params_prefix=None, **params):
     """Fetch the given uri and return the contents of the response."""
-    params = urllib.urlencode(_prepare_params(params, params_prefix))
+    params = urlencode(_prepare_params(params, params_prefix))
+    binary_params = params.encode('ASCII')
 
     # build the HTTP request
     url = "https://%s/%s.xml" % (CHALLONGE_API_URL, uri)
-    if method == "GET":
-        req = urllib2.Request("%s?%s" % (url, params))
-    else:
-        req = urllib2.Request(url)
-        req.add_data(params)
+    req = Request(url, binary_params)
     req.get_method = lambda: method
 
     # use basic authentication
     user, api_key = get_credentials()
-    auth_handler = urllib2.HTTPBasicAuthHandler()
+    auth_handler = HTTPBasicAuthHandler()
     auth_handler.add_password(
         realm="Application",
         uri=req.get_full_url(),
         user=user,
         passwd=api_key
     )
-    opener = urllib2.build_opener(auth_handler)
+    opener = build_opener(auth_handler)
 
     try:
         response = opener.open(req)
-    except urllib2.HTTPError, e:
+    except HTTPError as e:
         if e.code != 422:
             raise
         # wrap up application-level errors
@@ -77,7 +82,6 @@ def fetch_and_parse(method, uri, params_prefix=None, **params):
 
 def _parse(root):
     """Recursively convert an Element into python data types"""
-    import dateutil.parser
     if root.tag == "nil-classes":
         return []
     elif root.get("type") == "array":
@@ -91,8 +95,8 @@ def _parse(root):
             value = None
         elif type == "boolean":
             value = True if child.text.lower() == "true" else False
-        elif type == "datetime":
-            value = dateutil.parser.parse(child.text)
+        elif type == "dateTime":
+            value = iso8601.parse_date(child.text)
         elif type == "decimal":
             value = decimal.Decimal(child.text)
         elif type == "integer":
@@ -115,7 +119,7 @@ def _prepare_params(dirty_params, prefix=None):
 
     """
     params = {}
-    for k, v in dirty_params.iteritems():
+    for k, v in dirty_params.items():
         if hasattr(v, "isoformat"):
             v = v.isoformat()
         elif isinstance(v, bool):

@@ -13,10 +13,11 @@ api_key = None
 
 
 def _get_random_name():
-    return "pychallonge_" + "".join(random.choice(string.ascii_lowercase) for _ in xrange(0, 15))
+    return "pychallonge_" + "".join(random.choice(string.ascii_lowercase) for _ in range(0, 15))
 
 
 class APITestCase(unittest.TestCase):
+
     def test_set_credentials(self):
         challonge.set_credentials(username, api_key)
         self.assertEqual(api._credentials["user"], username)
@@ -33,6 +34,7 @@ class APITestCase(unittest.TestCase):
 
 
 class TournamentsTestCase(unittest.TestCase):
+
     def setUp(self):
         challonge.set_credentials(username, api_key)
         self.random_name = _get_random_name()
@@ -44,18 +46,18 @@ class TournamentsTestCase(unittest.TestCase):
 
     def test_index(self):
         ts = challonge.tournaments.index()
-        ts = filter(lambda x: x["id"] == self.t["id"], ts)
+        ts = list(filter(lambda x: x["id"] == self.t["id"], ts))
         self.assertEqual(len(ts), 1)
         self.assertEqual(self.t, ts[0])
 
     def test_index_filter_by_state(self):
         ts = challonge.tournaments.index(state="pending")
-        ts = filter(lambda x: x["id"] == self.t["id"], ts)
+        ts = list(filter(lambda x: x["id"] == self.t["id"], ts))
         self.assertEqual(len(ts), 1)
         self.assertEqual(self.t, ts[0])
 
         ts = challonge.tournaments.index(state="in_progress")
-        ts = filter(lambda x: x["id"] == self.t["id"], ts)
+        ts = list(filter(lambda x: x["id"] == self.t["id"], ts))
         self.assertEqual(ts, [])
 
     def test_index_filter_by_created(self):
@@ -97,52 +99,36 @@ class TournamentsTestCase(unittest.TestCase):
 
         self.assertEqual(t["tournament-type"], "round robin")
 
-    def test_publish(self):
-        self.assertRaises(challonge.ChallongeException,
-            challonge.tournaments.publish, self.t["id"])
-
-        self.assertEqual(self.t["published-at"], None)
-
-        challonge.participants.create(self.t["id"], "#1")
-        challonge.participants.create(self.t["id"], "#2")
-
-        challonge.tournaments.publish(self.t["id"])
-        t = challonge.tournaments.show(self.t["id"])
-
-        self.assertNotEqual(t["published-at"], None)
-
     def test_start(self):
-        # we have to add participants in order to publish() and start()
-        self.assertRaises(challonge.ChallongeException,
-            challonge.tournaments.start, self.t["id"])
+        # we have to add participants in order to start()
+        self.assertRaises(
+            challonge.ChallongeException,
+            challonge.tournaments.start,
+            self.t["id"])
 
         self.assertEqual(self.t["started-at"], None)
 
         challonge.participants.create(self.t["id"], "#1")
         challonge.participants.create(self.t["id"], "#2")
 
-        # we have to publish, first
-        self.assertRaises(challonge.ChallongeException,
-            challonge.tournaments.start, self.t["id"])
-
-        challonge.tournaments.publish(self.t["id"])
         challonge.tournaments.start(self.t["id"])
 
         t = challonge.tournaments.show(self.t["id"])
-        self.assertNotEqual(t["published-at"], None)
         self.assertNotEqual(t["started-at"], None)
 
     def test_reset(self):
-        # have to add participants in order to publish() and start()
+        # have to add participants in order to start()
         challonge.participants.create(self.t["id"], "#1")
         challonge.participants.create(self.t["id"], "#2")
 
-        challonge.tournaments.publish(self.t["id"])
         challonge.tournaments.start(self.t["id"])
 
         # we can't add participants to a started tournament...
-        self.assertRaises(challonge.ChallongeException,
-            challonge.participants.create, self.t["id"], "name")
+        self.assertRaises(
+            challonge.ChallongeException,
+            challonge.participants.create,
+            self.t["id"],
+            "name")
 
         challonge.tournaments.reset(self.t["id"])
 
@@ -153,6 +139,7 @@ class TournamentsTestCase(unittest.TestCase):
 
 
 class ParticipantsTestCase(unittest.TestCase):
+
     def setUp(self):
         challonge.set_credentials(username, api_key)
         self.t_name = _get_random_name()
@@ -175,7 +162,7 @@ class ParticipantsTestCase(unittest.TestCase):
 
     def test_show(self):
         p1 = challonge.participants.show(self.t["id"], self.p1["id"])
-        self.assertEqual(p1, self.p1)
+        self.assertEqual(p1["id"], self.p1["id"])
 
     def test_update(self):
         challonge.participants.update(self.t["id"], self.p1["id"], misc="Test!")
@@ -198,6 +185,7 @@ class ParticipantsTestCase(unittest.TestCase):
 
 
 class MatchesTestCase(unittest.TestCase):
+
     def setUp(self):
         challonge.set_credentials(username, api_key)
         self.t_name = _get_random_name()
@@ -207,7 +195,6 @@ class MatchesTestCase(unittest.TestCase):
         self.p1 = challonge.participants.create(self.t["id"], self.p1_name)
         self.p2_name = _get_random_name()
         self.p2 = challonge.participants.create(self.t["id"], self.p2_name)
-        challonge.tournaments.publish(self.t["id"])
         challonge.tournaments.start(self.t["id"])
 
     def tearDown(self):
@@ -233,12 +220,14 @@ class MatchesTestCase(unittest.TestCase):
         m = ms[0]
         self.assertEqual(m["state"], "open")
 
-        challonge.matches.update(self.t["id"], m["id"],
-            scores_csv="3-2,4-1,2-2", winner_id=m["player1-id"])
+        challonge.matches.update(
+            self.t["id"],
+            m["id"],
+            scores_csv="3-2,4-1,2-2",
+            winner_id=m["player1-id"])
 
         m = challonge.matches.show(self.t["id"], m["id"])
         self.assertEqual(m["state"], "complete")
-
 
 
 if __name__ == "__main__":
