@@ -1,5 +1,7 @@
 # pychallonge
 
+This repository is no longer maintained. Instead, see https://github.com/ZEDGR/pychallonge.
+
 Pychallonge provides python bindings for the
 [CHALLONGE!](http://challonge.com) [API](http://api.challonge.com/v1).
 
